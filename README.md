@@ -37,7 +37,7 @@ def __init__(loop):
 
     app = web.Application(loop=loop)
 
-    host = "localhost"
+    host = "0.0.0.0"
     port = 8282
 
     setup_route(app) # 라우팅 설정
@@ -45,6 +45,8 @@ def __init__(loop):
 
     return app, host, port # app, host, port 반환
 ```
+
+host를 0.0.0.0으로 하여 모든 IP로부터 접속을 허용을 해준다.
 
 
 ### 라우팅 설정 `routes.py`
