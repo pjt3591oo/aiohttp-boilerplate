@@ -175,7 +175,7 @@ def __init__(loop):
 
     app = web.Application(loop=loop)
 
-    host = "localhost"
+    host = "0.0.0.0"
     port = 8282
 
     setup_route(app)
