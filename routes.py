@@ -4,7 +4,7 @@ import asyncio
 
 
 def setup_route(app):
-    app.router.add_get('/recommend/{userKey}/{productKey}', recommend)
+    app.router.add_get('/responseText/{userKey}/{productKey}', responseText)
     app.router.add_get('/test', test)
 
 
@@ -13,7 +13,7 @@ def test(rq):
 
 
 @asyncio.coroutine
-def recommend(rq):
+def responseText(rq):
     userKey =  rq.match_info.get("userKey") or 'x'
     productKey =  rq.match_info.get("productKey") or 'x'
 

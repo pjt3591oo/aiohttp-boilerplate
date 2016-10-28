@@ -1,17 +1,18 @@
 import asyncio
 import logging
-
 from aiohttp import web
+
 from routes import setup_route as setup_route
 from middleware import setup_middlewares
 
+import configure.conf as conf
 
 def __init__(loop):
 
     app = web.Application(loop=loop)
 
-    host = "localhost"
-    port = 8282
+    host = conf.server["host"]
+    port = conf.server["port"]
 
     setup_route(app)
     setup_middlewares(app)
@@ -29,5 +30,5 @@ def main():
 
 
 if __name__ == "__main__":
-    print('server on')
+    print(conf.server["message"])
     main()
