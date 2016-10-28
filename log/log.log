@@ -8,3 +8,6 @@
 [INFO|log.py:21] 2016-10-28 09:58:31,136 > code : 200, user : x, product : x, recommend : size
 [INFO|log.py:21] 2016-10-28 10:04:39,223 > code : 200, user : x, product : x, recommend : size
 [INFO|log.py:21] 2016-10-28 10:04:41,209 > code : 200, user : x, product : x, recommend : size
+[INFO|log.py:21] 2016-10-28 10:12:37,040 > code : 200, user : x, product : x, recommend : {"some": "data"}
+[INFO|log.py:21] 2016-10-28 10:13:01,273 > code : 200, user : x, product : x, recommend : {"some": "data"}
+[INFO|log.py:21] 2016-10-28 10:25:25,253 > code : 200, user : x, product : x, recommend : {"some": "data"}
