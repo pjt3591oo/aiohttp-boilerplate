@@ -11,3 +11,5 @@
 [INFO|log.py:21] 2016-10-28 10:12:37,040 > code : 200, user : x, product : x, recommend : {"some": "data"}
 [INFO|log.py:21] 2016-10-28 10:13:01,273 > code : 200, user : x, product : x, recommend : {"some": "data"}
 [INFO|log.py:21] 2016-10-28 10:25:25,253 > code : 200, user : x, product : x, recommend : {"some": "data"}
+[INFO|log.py:21] 2016-10-28 10:55:53,377 > code : 200, user : x, product : x, recommend : {"some": "data"}
+[INFO|log.py:21] 2016-10-28 10:59:41,629 > code : 200, user : x, product : x, recommend : 1

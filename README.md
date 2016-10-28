@@ -30,6 +30,30 @@ python app.py
 해당 소스코드를 그대로 실행을 할 경우 8282포트로 설정이 되어있다. port는 app.py에서 **__init__** 함수내부의 `host`와 `port`를 수정을 해주면 된다. 수정 해주면 된다.
 
 
+### 서버설정
+- 설정 파일은 `/configure/conf` 에 작성된다.
+- 서버의 기본적인 설정
+- 데이터 베이스, 서버 포트 등의 설정정보들
+
+```.py
+#데이터 베이스 설정
+database = {
+        "host":'localhost',
+        "password" :'password',
+        "user" : 'user',
+        "database": 'database'
+},
+
+
+#서버 설정
+server = {
+    "host" : "0.0.0.0", # 허용 ip 0.0.0.0일 경우 모든 아이피 허용
+    "port" : 8282, # 접속 포트
+    "message" : "server on 8282 port"  # 서버 시작 메시지
+}
+```
+
+
 ### app.py의 init함수
 
 ```.py
@@ -37,13 +61,13 @@ def __init__(loop):
 
     app = web.Application(loop=loop)
 
-    host = "0.0.0.0"
-    port = 8282
+    host = conf.server["host"]
+    port = conf.server["port"]
 
-    setup_route(app) # 라우팅 설정
-    setup_middlewares(app) # 비들웨어 설정
+    setup_route(app)
+    setup_middlewares(app)
 
-    return app, host, port # app, host, port 반환
+    return app, host, port
 ```
 
 host를 0.0.0.0으로 하여 모든 IP로부터 접속을 허용을 해준다.
@@ -52,14 +76,15 @@ host를 0.0.0.0으로 하여 모든 IP로부터 접속을 허용을 해준다.
 ### 라우팅 설정 `routes.py`
 
 - 각 요청에 따른 처리를 만들어 준다.
+- `setup_route`를 app에서 호출을 해주면 된다.
 
 ```.py
 def setup_route(app):
-    app.router.add_get('/recommend/{userKey}/{productKey}', recommend)
-    app.router.add_get('/test', test)
+    app.router.add_get('/response/text/{u}/{p}', responseText)
+    app.router.add_get('/response/body/{u}/{p}', responseBody)
+    app.router.add_get('/response/json', responseJson)
+    app.router.add_get('/r', redirect)
 ```
-- 해당 url의 자리를 {}감싼 변수 명으로 받는다.(`rq.match_info.get("userKey")`)
-- 해당 함수를 app에서 호출을 해주면 된다.
 
 
 ### 실제 로직이 처리되는 부분
@@ -67,20 +92,48 @@ def setup_route(app):
 - 각 요청에 맞추어서 아래처럼 작성을 해주면 된다.
 - 각 API마다 등록을 시켜준다.
 
+
+
+`text`응답
 ```.py
 @asyncio.coroutine
-def recommend(request):
-    userKey =  request.match_info.get("userKey") or 'x'
-    productKey =  request.match_info.get("productKey") or 'x'
+def responseText(req):
+    uKey =  req.match_info.get("u") or 'x'
+    pKey =  req.match_info.get("p") or 'x'
 
-    size = str(test_module(userInfo, productInfo))
+    size = str(test_module(uKey, pKey))
 
     return  web.Response(text= size)
+
 ```
+
+`body`응답
+```.py
+@asyncio.coroutine
+def responseBody(req):
+    return web.Response(body=b"Hello, world")
+```
+
+`json`응답
+```.py
+@asyncio.coroutine
+def responseJson(req):
+    data = {'some': 'data'}
+    return web.json_response(data)
+```
+
+`redirect`
+```.py
+@asyncio.coroutine
+def redirect(req):
+    return web.HTTPFound('/response/json')
+```
+
 해당 함수는 실제 서버 로직이 실행되는 부분이다. 라우팅에서 설정해준 패스로 접속할 떄 해당 로직을 호출을 한다.
 
 > 개인 성향에 따라서 실제 로직이 처리되는 부분과 라우팅을 나눠도 되고 안나눠도 된다. 또한 API가 늘어날수록 API 종류에 따라서 routes파일을 나누는게 좋다.
 node.js에서는 디렉토리를 모듈로 가져오면 해당 디렉토리내의 index.js를 자동으로 가져오는데 python에서는 이점이 조금 다르다.
+
 
 ### 미들웨어 처리
 
@@ -99,6 +152,7 @@ node.js에서는 디렉토리를 모듈로 가져오면 해당 디렉토리내�
  ```
 
  ```.py
+ #서버에러
  async def handle_500(request, response):
      user = request.match_info.get("userKey") or 'x'
      product = request.match_info.get("productKey") or 'x'
@@ -165,18 +219,19 @@ app파일에서 setup_middlewares에 app인자를 넘겨주어서 호출을 해�
 ```.py
 import asyncio
 import logging
-
 from aiohttp import web
+
 from routes import setup_route as setup_route
 from middleware import setup_middlewares
 
+import configure.conf as conf
 
 def __init__(loop):
 
     app = web.Application(loop=loop)
 
-    host = "0.0.0.0"
-    port = 8282
+    host = conf.server["host"]
+    port = conf.server["port"]
 
     setup_route(app)
     setup_middlewares(app)
@@ -194,6 +249,10 @@ def main():
 
 
 if __name__ == "__main__":
-    print('server on')
+    print(conf.server["message"])
     main()
 ```
+
+
+### 서버 테스트
+- 해당 프레임 워크의 테스트 코드는 `/test` 내부에서 작성을 하였다.

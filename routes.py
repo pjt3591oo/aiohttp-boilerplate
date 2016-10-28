@@ -11,26 +11,26 @@ def setup_route(app):
 
 
 @asyncio.coroutine
-def responseText(rq):
-    userKey =  rq.match_info.get("u") or 'x'
-    productKey =  rq.match_info.get("p") or 'x'
+def responseText(req):
+    userKey =  req.match_info.get("u") or 'x'
+    productKey =  req.match_info.get("p") or 'x'
 
-    size = str(test_module(userInfo, productInfo))
+    size = str(test_module(userKey, productKey))
 
     return  web.Response(text= size)
 
 
 @asyncio.coroutine
-def responseBody(rq):
+def responseBody(req):
     return web.Response(body=b"Hello, world")
 
 
 @asyncio.coroutine
-def responseJson(rq):
+def responseJson(req):
     data = {'some': 'data'}
     return web.json_response(data)
 
 
 @asyncio.coroutine
-def redirect(request):
+def redirect(req):
     return web.HTTPFound('/response/json')
