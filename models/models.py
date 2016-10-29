@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, Float
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, backref
 from configure.database import Base
-console.log('testtesttest')
+print('testtesttest')
 class Test(Base):
 	__tablename__ = 'test'
 	id = Column(Integer, primary_key= True, autoincrement=True)

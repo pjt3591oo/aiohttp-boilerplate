@@ -1,6 +1,8 @@
 from aiohttp import web
 from test_module import test_module
 import asyncio
+from configure.database import init_db
+from configure.database import db_session
 from models.models import Test
 
 
