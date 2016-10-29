@@ -27,7 +27,7 @@ def responseBody(req):
 
 @asyncio.coroutine
 def responseJson(req):
-    data = {'some': 'data'}
+    data = {"some": "data"}
     return web.json_response(data)
 
 
