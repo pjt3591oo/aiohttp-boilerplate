@@ -1,6 +1,7 @@
 from aiohttp import web
 from test_module import test_module
 import asyncio
+from models.models import Test
 
 
 def setup_route(app):

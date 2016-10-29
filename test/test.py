@@ -1,7 +1,8 @@
 import requests
 import json
 
-ip = "http://192.168.110.1:8282"
+
+ip = "http://192.168.1.147:8282"
 
 
 def responseText():
