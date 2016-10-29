@@ -2,7 +2,7 @@
 database = {
         "category":"mysql",
         "host":'localhost',
-        "password" :'qkrwjdxo1',
+        "password" :'******',
         "user" : 'root',
         "database": 'test'
 },
@@ -11,6 +11,6 @@ database = {
 #서버 설정
 server = {
     "host" : "0.0.0.0", # 허용 ip 0.0.0.0일 경우 모든 아이피 허용
-    "port" : 9999, # 접속 포트
+    "port" : 8282, # 접속 포트
     "message" : "server on 8282 port"  # 서버 시작 메시지
 }

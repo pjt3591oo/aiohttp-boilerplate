@@ -1,36 +1,68 @@
 
-# aiohttp Framework 뼈대
-- python에서는 다양한 서버프레임 워크가 존재한다.
+# aiohttp Framework Project 생성
+
+- python에서는 다양한 서버프레임 워크가 존재한다. 그중 하나로 aiohttp에 대해서 다뤄보고자 한다.(해당 문서는 작성자인 멍개님에게 저작권이 있습니다.)
 - aiohttp는 가벼우면서 빠르게 짤 수 있다.
-- node.js의 express framework처럼 기본 구조를 잡아주는 것을 찾지 못하여 기본 뼈대를 만들었다.
+- node.js의 express generator처럼 기본 구조를 잡아주는 것을 찾지 못하여 기본 뼈대를 만들었다.
 
 
-## 서버를 시작하기 앞서 설치해야할 모듈
+## 서버를 시작하기 앞서 환경셋팅
+
 - aiohttp라는 프레임워크를 사용할거이기 때문에 `aiohttp`라는 모듈을 설치를 해준다.
 - 또한 `ayncio` 모듈도 설치를 해준다.
 - 로그를 찍기 위해 `logging` 모듈도 설치해준다.
-- DB 모듈은 개인 성향에 맞추어서 설치를 해준다.
+- DB 모듈은 개인 성향에 맞추어서 설치를 해준다.(DB 모듈에 대해서는 문서 아래부분에서 좀더 자세히 설명하겠다.)
 (orm을 쓸경우 `sqlalchemy`가 대표적이고 row query를 쓴다면 `pymysql`이나 `MySQLdb`가 대표적이다.)
 
 
-### 모듈설치
-#### Windows or Linux
+### 모듈설치 및 python 설정
+
+#### python3.5 설치
+
 ```
-pip install aiohttp # pip3 install aiohttp
-```
-```
-pip install asyncio # pip3 install aiohttp
+$ sudo apt-get update ; sudo apt-get upgrade
+$ wget https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tgz #python3.5.2 다운
+$ tar xvf Python-3.5.2.tgz   # 압축풀기
+$ cd Python-3.5.2              # 디렉토리 이동
+$ ./configure                   # makefile 생성
+$ make                         #python코드 컴파일
+$ sudo make install            # 설치
 ```
 
+- 빠른 시일에 virtualenv를 활용하여 파이썬 환경, 모듈의 의존성 문제를 해결하겠다.
+
+#### 모듈설치
+
+- requirements.txt내부에 있는 모듈을 한번에 설치를 해준다.
+- 에러가 뜨지 않는다면 정상적으로 설치가 완료 된 것이다.
+
+```.py
+pip3 install -r requirements.txt
+```
+
+###### requirements.txt 들여다 보기
+
+```
+$ cat requirements.txt
+aiohttp >= 1.0.5
+sqlalchemy >= 1.1.3
+mysqlclient >= 1.3.9
+aiohttp_jinja2 >= 0.8.0
+```
+
+> 파이썬 버전 3.5와 모듈들이 에러없이 설치가 이상없이 완료 됬으면 서버를 실행을해보자.
 
 ### 서버시작
+
 ```
-python app.py
+python3 app.py
 ```
-해당 소스코드를 그대로 실행을 할 경우 8282포트로 설정이 되어있다. port는 app.py에서 **__init__** 함수내부의 `host`와 `port`를 수정을 해주면 된다. 수정 해주면 된다.
+
+해당 소스코드를 그대로 실행을 할 경우 8282포트로 설정이 되어있다. port는 app.py에서 **__init__** 함수내부의 `host`와 `port`를 수정을 위해 configure.conf를 수정해 주면 된다.
 
 
 ### 서버설정
+
 - 설정 파일은 `/configure/conf` 에 작성된다.
 - 서버의 기본적인 설정
 - 데이터 베이스, 서버 포트 등의 설정정보들
@@ -91,8 +123,6 @@ def setup_route(app):
 
 - 각 요청에 맞추어서 아래처럼 작성을 해주면 된다.
 - 각 API마다 등록을 시켜준다.
-
-
 
 `text`응답
 ```.py
@@ -177,6 +207,7 @@ node.js에서는 디렉토리를 모듈로 가져오면 해당 디렉토리내�
 - 각각 응답 코드에 따른 후 처리를 만들었다.
 - 이제 이것을 app.middlewares에 등록을 시켜준다.
 
+
 ### 미들웨어등록
 
 ```.py
@@ -212,7 +243,103 @@ error_pages에 응답코드를 키값으로 해당 함수를 매핑을 시켜서
 app.middlewares에 error_pages의 받환값을 넣어준다.
 app파일에서 setup_middlewares에 app인자를 넘겨주어서 호출을 해준다.
 
+
+### DB 사용
+
+####  - DB를 사용하기 앞서 필요한 모듈 설치
+
+- 해당 프레임워크에서는 sqlalchemy을 사용하여 ORM을 사용할 것이다.
+- sqlalchemy는 MySQLdb라는 모듈을 사용하고 있다. mysqlclient도 함께 설치해 준다.
+- mysqlclient은 C컴파일이 되어있어 windows에서는 설치가 조금 버거울 수 있다.
+- windows에서는 c컴퍼일러가 설치되어 있으면 정상적으로 설치가 될 것이다.
+- linux나 mac에서는 아래 명령을 통해 정상적으로 설치가 될 것이다.
+- 만약 설치가 되지 않는다면 관리자 권한으로 실행해 주면 된다.
+
+```
+pip3 isntall mysqlclient
+```
+
+```
+pip3 install sqlalchemy
+```
+
+
+#### - db설정
+
+- configure.conf내부의 conf.database를 정의를 해준다.
+- configure.database에서 DB 엔진, 세션을 잡아준다.
+- database.py에서 정의한 Base를 모델을 정의하는데 사용한다.
+
+```.py
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+import configure.conf as conf
+
+url = conf.database[0]["category"]+"://"+conf.database[0]["user"]+":"+conf.database[0]["password"]+"@"+conf.database[0]["host"]+"/"+conf.database[0]["database"]
+
+engine = create_engine(url, convert_unicode=False)
+db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+
+Base = declarative_base()
+Base.query = db_session.query_property()
+
+def init_db():
+  from models import models
+
+  Base.metadata.create_all(engine)
+
+```
+
+#### - model 정의
+
+- db 세션을 잡았으니 이제 db 모델을 설정을 해준다.
+- 모델 정의 클래스는 configure.database에서 정의된 Base로부터 상속을 받는다
+- ORM(Object-relational mapping)은 DB 테이블을 객체로 매핑을 해준다.
+- ```__tablename__```은 실제 DB에 존재하는 테이블 이름이여야 한다.
+
+```.py
+from sqlalchemy import Column, Integer, String, DateTime, Float
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import relationship, backref
+from configure.database import Base
+
+class Test(Base):
+	__tablename__ = 'test'
+	id = Column(Integer, primary_key= True, autoincrement=True)
+	test = Column(Integer)
+	test1 = Column(Integer)
+	test2 = Column(String)
+	test3 = Column(String)
+
+
+	def __init__(self, id, test, test1, test2, test3):
+		self.id = id
+		self.test = test
+		self.test1 = test1
+		self.test2 = test2
+		self.test3 = test3
+
+
+	def __repr__(self):
+		return (self.id, self.test, self.test1, self.test2, self.test3)
+```
+
+#### - 정의한 모델, 세션을 import
+
+- 정의한 모델을 사용하여 DB를 쓰기 위해서 아래처럼 import를 해주면 된다.
+
+```.py
+from configure.database import init_db
+from configure.database import db_session
+from models.models import Test
+```
+
+> 주로 서버 로직이 실행되는 라우팅 파일쪽에서 많이 사용 될 것이다.
+
 ### app.py
+
 - 미들웨어, 라우팅을 app에서 설정을 해준다.
 - 해당 모듈들을 불러와서 호출해주기만 해면 된다. web.Application(loop=loop)을 인자로 넘겨준다.
 
@@ -260,76 +387,23 @@ if __name__ == "__main__":
 - 각 요청에 따른 코드를 작성
 - 우선 요청을 해주는 requests모듈과 json으로 응답을 받기위해 json모듈을 import 시켜준다.
 
-    ```.py
-    import requests
-    import json
+```.py
+import requests
+import json
 
-    ip = "http://192.168.110.1:8282"
-    ```
-    - 서버 ip를 선언을 해주었다.
+ip = "http://192.168.110.1:8282"
+```
+서버 ip를 선언을 해주었다.
 
 
 - text응답 API 요청
 
-    ```.py
-    def responseText():
-        res = requests.get(ip + '/response/text/1/1')
-        status_code = res.status_code
-        if (status_code != 200):
-            return -1
-        else:
-            return res.text
-    ```
-
-- body응답 API 요청
-
-    ```.py
-    def responseBody():
-        res = requests.get(ip + '/response/body/1/1')
-        status_code = res.status_code
-        if (status_code != 200):
-            return -1
-        else:
-            return res.text
-    ```
-
--  json응답 API 요청
-
-    ```.py
-    def responseJson():
-        res = requests.get(ip + '/response/json')
-        status_code = res.status_code
-        if (status_code != 200):
-            return -1
-        else:
-            return res.text
-    ```
-
-- redirect응답 API 요청
-
-    ```.py
-    def redirect():
-        res = requests.get(ip + '/response/json')
-        status_code = res.status_code
-        if (status_code != 200):
-            return -1
-        else:
-            return res.text
-    ```
-- 테스트 코드작성
-
-    ```.py
-    texts = responseText()
-    bodys = responseBody()
-    jsons = responseJson()
-    redirects = redirect()
-
-    assert texts  == "1"
-    assert texts != -1
-    assert bodys  == "Hello, world"
-    assert bodys != -1
-    assert jsons == json.dumps({"some": "data"})
-    assert jsons != -1
-    assert redirects == json.dumps({"some": "data"})
-    assert redirects != -1
-    ```
+```.py
+def responseText():
+    res = requests.get(ip + '/response/text/1/1')
+    status_code = res.status_code
+    if (status_code != 200):
+        return -1
+    else:
+        return res.text
+```
