@@ -50,7 +50,7 @@ mysqlclient >= 1.3.9
 aiohttp_jinja2 >= 0.8.0
 ```
 
-> 파이썬 버전 3.5와 모듈들이 에러없이 설치가 이상없이 완료 됬으면 서버를 실행을해보자.
+> 파이썬 버전 3.5와 모듈들이 에러없이 설치가 이상없이 완료 됬으면 서버를 실행을해보자. 파이썬은 버전에 따라 비동기 처리 방식이 약간 다르기 떄문에 해당 코드들을 3.5이외의 버전에서 샤용을 할 경우 async 부분에서 에러가 발생 할 수 있다.
 
 ### 서버시작
 
@@ -112,10 +112,15 @@ host를 0.0.0.0으로 하여 모든 IP로부터 접속을 허용을 해준다.
 
 ```.py
 def setup_route(app):
+    # get요청
     app.router.add_get('/response/text/{u}/{p}', responseText)
     app.router.add_get('/response/body/{u}/{p}', responseBody)
     app.router.add_get('/response/json', responseJson)
     app.router.add_get('/r', redirect)
+
+    # post요청
+    app.router.add_post('/post/test', posttest)
+
 ```
 
 
@@ -123,6 +128,24 @@ def setup_route(app):
 
 - 각 요청에 맞추어서 아래처럼 작성을 해주면 된다.
 - 각 API마다 등록을 시켜준다.
+
+#### post요청에 대한 처리
+
+---
+
+```.py
+@asyncio.coroutine
+def posttest(req):
+    post_data = yield from req.POST()
+    return  web.Response(text= 'test')
+```
+
+yield from을 명시하지 않으면 에러가 발생을 한다.
+또한 req는 multiDict이라는 방식으로 body를 처리한다. 만약에 list를 서버에게 보낸다면 해당 json.dumps 혹은 JSON.stringify처리를 해서 보낸후 json.loads(yield from req.POST())처리를 하는것이 좋다.
+
+
+#### get요청에 대한 처리
+---
 
 `text`응답
 ```.py
@@ -152,7 +175,7 @@ def responseJson(req):
     return web.json_response(data)
 ```
 
-`redirect`
+`새로고침`
 ```.py
 @asyncio.coroutine
 def redirect(req):

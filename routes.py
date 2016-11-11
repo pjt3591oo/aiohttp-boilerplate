@@ -12,6 +12,13 @@ def setup_route(app):
     app.router.add_get('/response/json', responseJson)
     app.router.add_get('/r', redirect)
 
+    app.router.add_post('/post/test', posttest)
+
+@asyncio.coroutine
+def posttest(req):
+    post_data = yield from req.POST()
+    return  web.Response(text= 'test')
+
 
 @asyncio.coroutine
 def responseText(req):
